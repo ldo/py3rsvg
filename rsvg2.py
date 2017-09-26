@@ -476,7 +476,7 @@ class Handle :
         if id != None :
             success = rsvg.rsvg_handle_render_cairo_sub(self._rsvgobj, ctx._cairob, id.encode())
         else :
-            success = rsvg.rsvg_handle_render_cairo.restype(self._rsvgobj, ctx._cairobj)
+            success = rsvg.rsvg_handle_render_cairo(self._rsvgobj, ctx._cairobj)
         #end if
         ctx._check() # hopefully will raise appropriate Cairo error here
         if not success :
