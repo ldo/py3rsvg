@@ -68,6 +68,8 @@ class RSVG :
             ]
     #end PositionData
 
+    DEFAULT_DPI = 90 # from rsvg-base.c
+
 #end RSVG
 
 #+
