@@ -98,10 +98,10 @@ rsvg.rsvg_handle_close.restype = RSVG.gboolean
 rsvg.rsvg_handle_close.argtypes = (ct.c_void_p, RSVG.GErrorPtr)
 # rsvg_handle_get_pixbuf, rsvg_handle_get_pixbuf_sub NYI
 
-rsvg.rsvg_handle_get_base_uri.restype = ct.c_void_p
+rsvg.rsvg_handle_get_base_uri.restype = ct.c_char_p
 rsvg.rsvg_handle_get_base_uri.argtypes = (ct.c_void_p,)
 rsvg.rsvg_handle_set_base_uri.restype = None
-rsvg.rsvg_handle_set_base_uri.argtypes = (ct.c_void_p, ct.c_void_p)
+rsvg.rsvg_handle_set_base_uri.argtypes = (ct.c_void_p, ct.c_char_p)
 
 rsvg.rsvg_handle_get_dimensions.restype = None
 rsvg.rsvg_handle_get_dimensions.argtypes = (ct.c_void_p, ct.c_void_p)
@@ -111,6 +111,13 @@ rsvg.rsvg_handle_get_position_sub.restype = RSVG.gboolean
 rsvg.rsvg_handle_get_position_sub.argtypes = (ct.c_void_p, ct.c_void_p, ct.c_char_p)
 rsvg.rsvg_handle_has_sub.restype = RSVG.gboolean
 rsvg.rsvg_handle_has_sub.argtypes = (ct.c_void_p, ct.c_char_p)
+
+rsvg.rsvg_handle_get_title.restype = ct.c_char_p
+rsvg.rsvg_handle_get_title.argtypes = (ct.c_void_p,)
+rsvg.rsvg_handle_get_desc.restype = ct.c_char_p
+rsvg.rsvg_handle_get_desc.argtypes = (ct.c_void_p,)
+rsvg.rsvg_handle_get_metadata.restype = ct.c_char_p
+rsvg.rsvg_handle_get_metadata.argtypes = (ct.c_void_p,)
 
 rsvg.rsvg_handle_new_with_flags.restype = ct.c_void_p
 rsvg.rsvg_handle_new_with_flags.argtypes = (RSVG.HandleFlags,)
@@ -350,6 +357,59 @@ class Handle :
             self._rsvgobj = None
         #end if
     #end __del__
+
+    @property
+    def base_uri(self) :
+        uri = rsvg.rsvg_handle_get_base_uri(self._rsvgobj)
+        if uri != None :
+            result = uri.decode()
+        else :
+            result = None
+        #end if
+        return \
+            result
+    #end base_uri
+
+    @base_uri.setter
+    def base_uri(self, uri) :
+        rsvg.rsvg_handle_set_base_uri(self._rsvgobj, uri.encode())
+    #end base_uri
+
+    @property
+    def title(self) :
+        title = rsvg.rsvg_handle_get_title(self._rsvgobj)
+        if title != None :
+            result = title.decode()
+        else :
+            result = None
+        #end if
+        return \
+            result
+    #end title
+
+    @property
+    def desc(self) :
+        desc = rsvg.rsvg_handle_get_desc(self._rsvgobj)
+        if desc != None :
+            result = desc.decode()
+        else :
+            result = None
+        #end if
+        return \
+            result
+    #end desc
+
+    @property
+    def metadata(self) :
+        metadata = rsvg.rsvg_handle_get_metadata(self._rsvgobj)
+        if metadata != None :
+            result = metadata.decode()
+        else :
+            result = None
+        #end if
+        return \
+            result
+    #end metadata
 
     def set_dpi(self, dpi = 0) :
         if isinstance(dpi, Real) :
