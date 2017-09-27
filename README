@@ -1,0 +1,117 @@
+py3rsvg is a pure-Python-3 binding for
+[librsvg](https://github.com/GNOME/librsvg) that tries to avoid any
+dependencies on GLib/GObject or any other such stuff. It does require
+my Qahirah ([GitLab](https://gitlab.com/ldo/qahirah),
+[GitHub](https://github.com/ldo/qahirah)) Python binding for the Cairo
+graphics library. This is to implement the `render_cairo` function for
+rendering an SVG image into a Cairo graphics context, and also to
+use Qahirah’s `Vector` type for representing 2D geometrical coordinates.
+
+
+Loading SVG Data
+================
+
+`librsvg` defines an *RSVGHandle* as an opaque object containing SVG data.
+py3rsvg defines the `Handle` class as the Python wrapper around an `RSVGHandle`.
+You can create a `Handle` object in different ways: the `Handle.new()` class
+method creates one initially containing no SVG data: you have to explicitly
+load an SVG stream into it using one or more calls to its `write()` method,
+followed by a `close()` call to indicate the end of the stream.
+
+Alternatively, you can call `Handle.new_from_file()` to create a `Handle`
+object and load it with the contents of a specified SVG file in a single
+operation.
+
+
+Querying Properties
+===================
+
+py3rsvg supports the `librsvg` calls for obtaining *title*,
+*description* and *metadata* strings (if present) from the SVG data,
+even though these calls are marked as “deprecated” in the `librsvg`
+documentation. These are accessible as read-only properties of the
+`Handle` object named `title`, `desc` and `metadata` respectively;
+their values will be `None` if they are not present.
+
+
+Rendering
+=========
+
+py3rsvg only supports rendering an SVG image into a Cairo context using
+the aforementioned Qahirah Python binding. I have no plans to support
+the calls for rendering to a GDK Pixbuf, as that would bring in GObject/GLib
+dependencies that I am trying to avoid.
+
+You can determine the bounds of the SVG image using the `Handle`
+object’s read-only `dimensions` property; this returns a Qahirah
+`Vector` giving the rounded integer pixel bounds at the current DPI
+setting. To change the DPI setting, call the `set_dpi` method; this
+can take either a single scalar real value, or a `Vector` giving
+separate x- and y- pixel densities. Beware, however, that `librsvg`
+will **not** render with non-uniform pixel densities into a Cairo
+context; it will use the smaller of the two density values.
+
+
+Complete In-Line Example
+========================
+
+First, let us import the necessary modules.
+
+    import qahirah as qah
+    from qahirah import \
+        CAIRO, \
+        Colour
+    import rsvg2
+
+Create a new, empty RSVG handle:
+
+    hdl = rsvg2.Handle.new()
+
+Insert some literal SVG data into it: this simple example draws a filled
+blue-green circle in the middle of the drawing area.
+
+    hdl.write \
+      (
+        "<?xml version=\"1.0\" standalone=\"yes\"?>\n"
+        "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" version=\"1.1\"\n"
+        "    width=\"32cm\" height=\"18cm\" viewBox=\"-5 -2.5 240 135\">\n"
+
+        "<circle cx=\"115\" cy=\"65\" r=\"60\" fill=\"#4180be\"/>\n"
+
+        "</svg>\n"
+      )
+    hdl.close()
+
+Create a Cairo `ImageSurface` big enough to hold the rendered image at
+its default 90dpi pixel density setting:
+
+    pix = qah.ImageSurface.create \
+      (
+        format = CAIRO.FORMAT_ARGB32,
+        dimensions = hdl.dimensions
+      )
+
+Create a Cairo drawing `Context` and make sure the pixels are properly
+initialized, so areas that are not written to have defined values
+(here they are all set to fully transparent):
+
+    ctx = \
+        (qah.Context.create(pix)
+            .set_operator(CAIRO.OPERATOR_SOURCE)
+            .set_source_colour(Colour.grey(0, 0))
+            .paint()
+        )
+
+Render the SVG image into the `Context`:
+
+    hdl.render_cairo(ctx)
+
+Save the result to a PNG file:
+
+    pix.flush()
+    pix.write_to_png("test.png")
+
+which can then be viewed in your image editor or viewer of choice.
+
+Lawrence D'Oliveiro <ldo@geek-central.gen.nz>
+2017 September 27
