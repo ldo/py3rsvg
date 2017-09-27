@@ -467,7 +467,7 @@ class Handle :
             rsvg.rsvg_handle_has_sub(self._rsvgobj, id.encode()) != 0
     #end has_sub
 
-    def render_qahirah(self, ctx, id = None) :
+    def render_cairo(self, ctx, id = None) :
         "renders the SVG image into a qahirah.Context. id is either None to render the" \
         " whole thing, or the name of the particular object to render."
         if not isinstance(ctx, qah.Context) :
@@ -482,7 +482,7 @@ class Handle :
         if not success :
             raise RuntimeError("render_cairo failed for some reason")
         #end if
-    #end render_qahirah
+    #end render_cairo
 
 #end Handle
 
