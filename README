@@ -1,11 +1,16 @@
 py3rsvg is a pure-Python-3 binding for
-[librsvg](https://github.com/GNOME/librsvg) that tries to avoid any
+[`librsvg`](https://github.com/GNOME/librsvg) that tries to avoid any
 dependencies on GLib/GObject or any other such stuff. It does require
 my Qahirah ([GitLab](https://gitlab.com/ldo/qahirah),
 [GitHub](https://github.com/ldo/qahirah)) Python binding for the Cairo
 graphics library. This is to implement the `render_cairo` function for
 rendering an SVG image into a Cairo graphics context, and also to
 use Qahirah’s `Vector` type for representing 2D geometrical coordinates.
+
+Useful links:
+
+* [`librsvg` docs](https://developer.gnome.org/rsvg/stable/)
+* [SVG 1.1 spec](https://www.w3.org/TR/SVG11/)
 
 
 Loading SVG Data
@@ -73,7 +78,8 @@ blue-green circle in the middle of the drawing area.
     hdl.write \
       (
         "<?xml version=\"1.0\" standalone=\"yes\"?>\n"
-        "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" version=\"1.1\"\n"
+        "<svg xmlns=\"http://www.w3.org/2000/svg\"\n"
+        "    xmlns:xlink=\"http://www.w3.org/1999/xlink\" version=\"1.1\"\n"
         "    width=\"32cm\" height=\"18cm\" viewBox=\"-5 -2.5 240 135\">\n"
 
         "<circle cx=\"115\" cy=\"65\" r=\"60\" fill=\"#4180be\"/>\n"
