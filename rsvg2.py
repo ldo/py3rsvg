@@ -330,6 +330,10 @@ class Handle :
         if isinstance(data, bytes) :
             baseadr = ct.cast(data, ct.c_void_p).value
             length = len(data)
+        elif isinstance(data, str) :
+            data = data.encode() # to bytes
+            baseadr = ct.cast(data, ct.c_void_p).value
+            length = len(data)
         elif isinstance(data, bytearray) :
             baseadr = ct.addressof((ct.c_char * len(data)).from_buffer(data))
             length = len(data)
