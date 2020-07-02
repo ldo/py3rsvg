@@ -460,7 +460,7 @@ class Handle :
 
     def get_position_sub(self, id) :
         pos = RSVG.PositionData()
-        success = rsvg.rsvg_handle_get_position_sub(self._rsvgobj, ct.byref(pos))
+        success = rsvg.rsvg_handle_get_position_sub(self._rsvgobj, ct.byref(pos), id.encode())
         if success :
             result = Vector(pos.width, pos.height)
         else :
@@ -482,7 +482,7 @@ class Handle :
             raise TypeError("ctx must be a qahirah.Context")
         #end if
         if id != None :
-            success = rsvg.rsvg_handle_render_cairo_sub(self._rsvgobj, ctx._cairob, id.encode())
+            success = rsvg.rsvg_handle_render_cairo_sub(self._rsvgobj, ctx._cairobj, id.encode())
         else :
             success = rsvg.rsvg_handle_render_cairo(self._rsvgobj, ctx._cairobj)
         #end if
