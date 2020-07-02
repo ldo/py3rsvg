@@ -168,6 +168,9 @@ rsvg.rsvg_handle_get_desc.argtypes = (ct.c_void_p,)
 rsvg.rsvg_handle_get_metadata.restype = ct.c_char_p
 rsvg.rsvg_handle_get_metadata.argtypes = (ct.c_void_p,)
 
+rsvg.rsvg_handle_get_intrinsic_dimensions.restype = None
+rsvg.rsvg_handle_get_intrinsic_dimensions.argtypes = (ct.c_void_p, ct.POINTER(RSVG.gboolean), ct.POINTER(RSVG.Length), ct.POINTER(RSVG.gboolean), ct.POINTER(RSVG.Length), ct.POINTER(RSVG.gboolean), ct.POINTER(RSVG.Rectangle))
+
 rsvg.rsvg_handle_new_with_flags.restype = ct.c_void_p
 rsvg.rsvg_handle_new_with_flags.argtypes = (RSVG.HandleFlags,)
 
@@ -519,6 +522,8 @@ class Handle :
             result
     #end get_dimensions
     get_dimensions_sub = get_dimensions # whichever name you prefer
+
+    # TODO: get_intrinsic_dimensions
 
     def get_position_sub(self, id) :
         pos = RSVG.PositionData()
