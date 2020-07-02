@@ -33,6 +33,9 @@ class RSVG :
     gsize = ct.c_ulong
     GType = ct.c_uint
 
+    Error = ct.c_uint
+    ERROR_FAILED = 0
+
     HandleFlags = ct.c_uint
     HANDLE_FLAGS_NONE = 0
     HANDLE_FLAG_UNLIMITED = 1 << 0
@@ -80,6 +83,26 @@ class RSVG :
             ]
     #end Rectangle
     RectanglePtr = ct.POINTER(Rectangle)
+
+    Unit = ct.c_uint
+    UNIT_PERCENT = 0
+    UNIT_PX = 1
+    UNIT_EM = 2
+    UNIT_EX = 3
+    UNIT_IN = 4
+    UNIT_CM = 5
+    UNIT_MM = 6
+    UNIT_PT = 7
+    UNIT_PC = 8
+
+    class Length(ct.Structure) :
+        pass
+    Length._fields_ = \
+        [
+            ("length", ct.c_double),
+            ("unit", Unit),
+        ]
+    #end Length
 
     DEFAULT_DPI = 90 # from rsvg-base.c
 
