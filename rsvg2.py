@@ -1,6 +1,6 @@
 """Pure-python wrapper for librsvg that has no dependencies on anything Gtk-related."""
 #+
-# Copyright 2017 Lawrence D'Oliveiro <ldo@geek-central.gen.nz>.
+# Copyright 2017-2020 Lawrence D'Oliveiro <ldo@geek-central.gen.nz>.
 # Licensed under the GNU Lesser General Public License v2.1 or later.
 #-
 
@@ -24,11 +24,12 @@ class RSVG :
     " class in preference to accessing low-level structures directly."
 
     MAJOR_VERSION = 2
-    MINOR_VERSION = 40
-    MICRO_VERSION = 40
-    VERSION = "2.40.18"
+    MINOR_VERSION = 48
+    MICRO_VERSION = 7
+    VERSION = "2.48.7"
 
     gboolean = ct.c_int
+    guint = ct.c_uint
     gsize = ct.c_ulong
     GType = ct.c_uint
 
@@ -49,6 +50,7 @@ class RSVG :
             ("message", ct.c_char_p),
         ]
     GErrorPtr = ct.POINTER(GError)
+    GErrorPtrPtr = ct.POINTER(GErrorPtr)
 
     class DimensionData(ct.Structure) :
         _fields_ = \
@@ -68,9 +70,31 @@ class RSVG :
             ]
     #end PositionData
 
+    class Rectangle(ct.Structure) :
+        _fields_ = \
+            [
+                ("x", ct.c_double),
+                ("y", ct.c_double),
+                ("width", ct.c_double),
+                ("height", ct.c_double),
+            ]
+    #end Rectangle
+    RectanglePtr = ct.POINTER(Rectangle)
+
     DEFAULT_DPI = 90 # from rsvg-base.c
 
 #end RSVG
+
+#+
+# Library globals
+#-
+
+if hasattr(rsvg, "librsvg_version") :
+    librsvg_major_version = RSVG.guint.in_dll(rsvg, "librsvg_major_version")
+    librsvg_minor_version = RSVG.guint.in_dll(rsvg, "librsvg_minor_version")
+    librsvg_micro_version = RSVG.guint.in_dll(rsvg, "librsvg_micro_version")
+    ibrsvg_version = ct.c_char_p.in_dll(rsvg, "librsvg_version")
+#end if
 
 #+
 # Routine arg/result types
@@ -124,6 +148,9 @@ rsvg.rsvg_handle_get_metadata.argtypes = (ct.c_void_p,)
 rsvg.rsvg_handle_new_with_flags.restype = ct.c_void_p
 rsvg.rsvg_handle_new_with_flags.argtypes = (RSVG.HandleFlags,)
 
+rsvg.rsvg_handle_set_stylesheet.restype = RSVG.gboolean
+rsvg.rsvg_handle_set_stylesheet.argtypes = (ct.c_void_p, ct.POINTER(ct.c_char), RSVG.gsize, RSVG.GErrorPtr)
+
 # GFile stuff NYI
 
 rsvg.rsvg_handle_new_from_data.restype = ct.c_void_p
@@ -139,6 +166,17 @@ rsvg.rsvg_handle_render_cairo.restype = RSVG.gboolean
 rsvg.rsvg_handle_render_cairo.argtypes = (ct.c_void_p, ct.c_void_p)
 rsvg.rsvg_handle_render_cairo_sub.restype = RSVG.gboolean
 rsvg.rsvg_handle_render_cairo_sub.argtypes = (ct.c_void_p, ct.c_void_p, ct.c_char_p)
+
+rsvg.rsvg_handle_render_document.restype = RSVG.gboolean
+rsvg.rsvg_handle_render_document.argtypes = (ct.c_void_p, ct.c_void_p, RSVG.RectanglePtr, RSVG.GErrorPtr)
+rsvg.rsvg_handle_get_geometry_for_layer.restype = RSVG.gboolean
+rsvg.rsvg_handle_get_geometry_for_layer.argtypes = (ct.c_void_p, ct.c_char_p, RSVG.RectanglePtr, RSVG.RectanglePtr, RSVG.RectanglePtr, RSVG.GErrorPtr)
+rsvg.rsvg_handle_render_layer.restype = RSVG.gboolean
+rsvg.rsvg_handle_render_layer.argtypes = (ct.c_void_p, ct.c_void_p, ct.c_char_p, RSVG.RectanglePtr, RSVG.GErrorPtr)
+rsvg.rsvg_handle_get_geometry_for_element.restype = RSVG.gboolean
+rsvg.rsvg_handle_get_geometry_for_element.argtypes = (ct.c_void_p, ct.c_char_p, RSVG.RectanglePtr, RSVG.RectanglePtr, RSVG.GErrorPtr)
+rsvg.rsvg_handle_render_element.restype = RSVG.gboolean
+rsvg.rsvg_handle_render_element.argtypes = (ct.c_void_p, ct.c_void_p, ct.c_char_p, RSVG.RectanglePtr, RSVG.GErrorPtr)
 
 libc.free.argtypes = (ct.c_void_p,)
 
@@ -158,7 +196,8 @@ def set_default_dpi(dpi = 0) :
 #end set_default_dpi
 
 class Error :
-    "wraps a GError."
+    "wraps a GError. FIXME: Not sure if this is correct, since library calls" \
+    " take a “GError **”, not a “GError *”."
 
     __slots__ = ("_error",)
 
@@ -491,6 +530,10 @@ class Handle :
             raise RuntimeError("render_cairo failed for some reason")
         #end if
     #end render_cairo
+
+    # TODO: render_document, get_geometry_for_layer, render_layer,
+    # get_geometry_for_element, render_element
+    # once I figure out how to deal with GError args.
 
 #end Handle
 
