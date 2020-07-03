@@ -44,7 +44,16 @@ class RSVG :
     GQuark = ct.c_uint
 
     class GError(ct.Structure) :
-        pass
+
+        def __repr__(self) :
+            return \
+              (
+                    "%s(domain = %d, code = %d, message = %s)"
+                %
+                    (type(self).__name__, self.domain, self.code, self.message)
+              )
+        #end __repr__
+
     #end GError
     GError._fields_ = \
         [
@@ -97,12 +106,12 @@ class RSVG :
 
     class Length(ct.Structure) :
         pass
+    #end Length
     Length._fields_ = \
         [
             ("length", ct.c_double),
             ("unit", Unit),
         ]
-    #end Length
 
     DEFAULT_DPI = 90 # from rsvg-base.c
 
@@ -221,105 +230,9 @@ def set_default_dpi(dpi = 0) :
     #end if
 #end set_default_dpi
 
-class Error :
-    "wraps a GError. FIXME: Not sure if this is correct, since library calls" \
-    " take a “GError **”, not a “GError *”."
-
-    __slots__ = ("_error",)
-
-    def __init__(self) :
-        self._error = RSVG.GError()
-    #end __init__
-
-    @classmethod
-    def init(celf) :
-        "for consistency with other classes that don’t want caller to instantiate directly."
-        return \
-            celf()
-    #end init
-
-    def __del__(self) :
-        libc.free(self._error.message)
-        self._error.message = None
-    #end __del__
-
-    @property
-    def domain(self) :
-        return \
-            self._error.domain
-    #end domain
-
-    @property
-    def code(self) :
-        return \
-            self._error.code
-    #end code
-
-    @property
-    def message(self) :
-        return \
-            self._error.message.decode()
-    #end message
-
-    def raise_if_set(self) :
-        if self._error.code != 0 or self._error.domain != 0 :
-            raise RuntimeError \
-              (
-                    "RSVG error code %#008x domain %#08x: %s"
-                %
-                    (
-                        self._error.code,
-                        self._error.domain,
-                        (lambda : "?", lambda : self._error.message.decode())[self._error.message != None]()
-                    )
-              )
-        #end if
-    #end raise_if_set
-
-#end Error
-
-class _DummyError :
-    # like an Error, but is never set and so will never raise.
-
-    def raise_if_set(self) :
-        pass
-    #end raise_if_set
-
-#end _DummyError
-
-def _get_error(error) :
-    # Common routine which processes an optional user-supplied Error
-    # argument, and returns 2 Error-like objects: the first a real
-    # Error object to be passed to the librsvg call, the second is
-    # either the same Error object or a separate _DummyError object
-    # on which to call raise_if_set() afterwards. The procedure for
-    # using this is
-    #
-    #     error, my_error = _get_error(error)
-    #     ... call librsvg routine, passing error._error ...
-    #     my_error.raise_if_set()
-    #
-    # If the user passes None for error, then an internal Error object
-    # is created, and returned as both results. That way, if it is
-    # filled in by the librsvg call, calling raise_if_set() will
-    # automatically raise the exception.
-    # But if the user passed their own Error object, then it is
-    # returned as the first result, and a _DummyError as the second
-    # result. This means the raise_if_set() call becomes a noop, and
-    # it is up to the caller to check if their Error object was filled
-    # in or not.
-    if error != None and not isinstance(error, Error) :
-        raise TypeError("error must be an Error")
-    #end if
-    if error != None :
-        my_error = _DummyError()
-    else :
-        my_error = Error()
-        error = my_error
-    #end if
-    return \
-        error, my_error
-#end _get_error
+# Note that I don’t currently provide any support for GError objects.
+# In my (admittedly limited) experiments, it doesn’t look like librsvg
+# returns anything meaningful in them anyway.
 
 class Handle :
     "an SVG rendering context. Do not instantiate directly; use the new_xxx methods."
@@ -371,9 +284,11 @@ class Handle :
         else :
             raise TypeError("data is not bytes, bytearray or array.array of bytes")
         #end if
-        error, my_error = _get_error(error)
-        rsvgobj = rsvg.rsvg_handle_new_from_data(baseadr, length, error._error)
-        my_error.raise_if_set()
+        error = RSVG.GErrorPtr()
+        rsvgobj = rsvg.rsvg_handle_new_from_data(baseadr, length, error)
+        if bool(error) :
+            print(error.contents) # debug
+        #end if
         if rsvgobj != None :
             result = celf(rsvgobj)
         else :
@@ -385,9 +300,12 @@ class Handle :
 
     @classmethod
     def new_from_file(celf, file_name, error = None) :
-        error, my_error = _get_error(error)
-        result = rsvg.rsvg_handle_new_from_file(file_name.encode(), error._error)
-        my_error.raise_if_set()
+        error = RSVG.GErrorPtr()
+        result = rsvg.rsvg_handle_new_from_file(file_name.encode(), error)
+        if bool(error) :
+            print(error.contents) # debug
+        #end if
+        # more TBD
         if result == None :
             raise RuntimeError("rsvg_handle_new_from_file failed")
         #end if
@@ -411,17 +329,13 @@ class Handle :
         else :
             raise TypeError("data is not bytes, bytearray or array.array of bytes")
         #end if
-        error, my_error = _get_error(error)
-        success = rsvg.rsvg_handle_write(self._rsvgobj, baseadr, length, error._error)
-        my_error.raise_if_set()
+        success = rsvg.rsvg_handle_write(self._rsvgobj, baseadr, length, None)
         return \
             success
     #end write
 
     def close(self, error = None) :
-        error, my_error = _get_error(error)
-        success = rsvg.rsvg_handle_close(self._rsvgobj, error._error)
-        my_error.raise_if_set()
+        success = rsvg.rsvg_handle_close(self._rsvgobj, None)
         return \
             success
     #end close
@@ -567,7 +481,7 @@ class Handle :
 
 def _atexit() :
     # disable all __del__ methods at process termination to avoid segfaults
-    for cls in Error, Handle :
+    for cls in Handle, :
         delattr(cls, "__del__")
     #end for
 #end _atexit
