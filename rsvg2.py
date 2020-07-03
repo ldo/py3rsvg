@@ -151,9 +151,9 @@ rsvg.rsvg_handle_new.restype = ct.c_void_p
 rsvg.rsvg_handle_new.argtypes = ()
 
 rsvg.rsvg_handle_write.restype = RSVG.gboolean
-rsvg.rsvg_handle_write.argtypes = (ct.c_void_p, ct.c_void_p, RSVG.gsize, RSVG.GErrorPtr)
+rsvg.rsvg_handle_write.argtypes = (ct.c_void_p, ct.c_void_p, RSVG.gsize, RSVG.GErrorPtrPtr)
 rsvg.rsvg_handle_close.restype = RSVG.gboolean
-rsvg.rsvg_handle_close.argtypes = (ct.c_void_p, RSVG.GErrorPtr)
+rsvg.rsvg_handle_close.argtypes = (ct.c_void_p, RSVG.GErrorPtrPtr)
 # rsvg_handle_get_pixbuf, rsvg_handle_get_pixbuf_sub NYI
 
 rsvg.rsvg_handle_get_base_uri.restype = ct.c_char_p
@@ -184,14 +184,14 @@ rsvg.rsvg_handle_new_with_flags.restype = ct.c_void_p
 rsvg.rsvg_handle_new_with_flags.argtypes = (RSVG.HandleFlags,)
 
 rsvg.rsvg_handle_set_stylesheet.restype = RSVG.gboolean
-rsvg.rsvg_handle_set_stylesheet.argtypes = (ct.c_void_p, ct.POINTER(ct.c_char), RSVG.gsize, RSVG.GErrorPtr)
+rsvg.rsvg_handle_set_stylesheet.argtypes = (ct.c_void_p, ct.POINTER(ct.c_char), RSVG.gsize, RSVG.GErrorPtrPtr)
 
 # GFile stuff NYI
 
 rsvg.rsvg_handle_new_from_data.restype = ct.c_void_p
-rsvg.rsvg_handle_new_from_data.argtypes = (ct.c_void_p, ct.c_ulong, RSVG.GErrorPtr)
+rsvg.rsvg_handle_new_from_data.argtypes = (ct.c_void_p, ct.c_ulong, RSVG.GErrorPtrPtr)
 rsvg.rsvg_handle_new_from_file.restype = ct.c_void_p
-rsvg.rsvg_handle_new_from_file.argtypes = (ct.c_char_p, RSVG.GErrorPtr)
+rsvg.rsvg_handle_new_from_file.argtypes = (ct.c_char_p, RSVG.GErrorPtrPtr)
 
 rsvg.rsvg_handle_free.restype = None
 rsvg.rsvg_handle_free.argtypes = (ct.c_void_p,)
@@ -203,15 +203,15 @@ rsvg.rsvg_handle_render_cairo_sub.restype = RSVG.gboolean
 rsvg.rsvg_handle_render_cairo_sub.argtypes = (ct.c_void_p, ct.c_void_p, ct.c_char_p)
 
 rsvg.rsvg_handle_render_document.restype = RSVG.gboolean
-rsvg.rsvg_handle_render_document.argtypes = (ct.c_void_p, ct.c_void_p, RSVG.RectanglePtr, RSVG.GErrorPtr)
+rsvg.rsvg_handle_render_document.argtypes = (ct.c_void_p, ct.c_void_p, RSVG.RectanglePtr, RSVG.GErrorPtrPtr)
 rsvg.rsvg_handle_get_geometry_for_layer.restype = RSVG.gboolean
-rsvg.rsvg_handle_get_geometry_for_layer.argtypes = (ct.c_void_p, ct.c_char_p, RSVG.RectanglePtr, RSVG.RectanglePtr, RSVG.RectanglePtr, RSVG.GErrorPtr)
+rsvg.rsvg_handle_get_geometry_for_layer.argtypes = (ct.c_void_p, ct.c_char_p, RSVG.RectanglePtr, RSVG.RectanglePtr, RSVG.RectanglePtr, RSVG.GErrorPtrPtr)
 rsvg.rsvg_handle_render_layer.restype = RSVG.gboolean
-rsvg.rsvg_handle_render_layer.argtypes = (ct.c_void_p, ct.c_void_p, ct.c_char_p, RSVG.RectanglePtr, RSVG.GErrorPtr)
+rsvg.rsvg_handle_render_layer.argtypes = (ct.c_void_p, ct.c_void_p, ct.c_char_p, RSVG.RectanglePtr, RSVG.GErrorPtrPtr)
 rsvg.rsvg_handle_get_geometry_for_element.restype = RSVG.gboolean
-rsvg.rsvg_handle_get_geometry_for_element.argtypes = (ct.c_void_p, ct.c_char_p, RSVG.RectanglePtr, RSVG.RectanglePtr, RSVG.GErrorPtr)
+rsvg.rsvg_handle_get_geometry_for_element.argtypes = (ct.c_void_p, ct.c_char_p, RSVG.RectanglePtr, RSVG.RectanglePtr, RSVG.GErrorPtrPtr)
 rsvg.rsvg_handle_render_element.restype = RSVG.gboolean
-rsvg.rsvg_handle_render_element.argtypes = (ct.c_void_p, ct.c_void_p, ct.c_char_p, RSVG.RectanglePtr, RSVG.GErrorPtr)
+rsvg.rsvg_handle_render_element.argtypes = (ct.c_void_p, ct.c_void_p, ct.c_char_p, RSVG.RectanglePtr, RSVG.GErrorPtrPtr)
 
 libc.free.argtypes = (ct.c_void_p,)
 
