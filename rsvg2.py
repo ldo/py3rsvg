@@ -286,11 +286,7 @@ class Handle :
         else :
             raise TypeError("data is not bytes, bytearray or array.array of bytes")
         #end if
-        error = RSVG.GErrorPtr()
-        rsvgobj = rsvg.rsvg_handle_new_from_data(baseadr, length, error)
-        if bool(error) :
-            print(error.contents) # debug
-        #end if
+        rsvgobj = rsvg.rsvg_handle_new_from_data(baseadr, length, None)
         if rsvgobj != None :
             result = celf(rsvgobj)
         else :
@@ -302,12 +298,7 @@ class Handle :
 
     @classmethod
     def new_from_file(celf, file_name, error = None) :
-        error = RSVG.GErrorPtr()
-        result = rsvg.rsvg_handle_new_from_file(file_name.encode(), error)
-        if bool(error) :
-            print(error.contents) # debug
-        #end if
-        # more TBD
+        result = rsvg.rsvg_handle_new_from_file(file_name.encode(), None)
         if result == None :
             raise RuntimeError("rsvg_handle_new_from_file failed")
         #end if
