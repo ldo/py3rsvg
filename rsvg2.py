@@ -233,6 +233,8 @@ def set_default_dpi(dpi = 0) :
 # Note that I don’t currently provide any support for GError objects.
 # In my (admittedly limited) experiments, it doesn’t look like librsvg
 # returns anything meaningful in them anyway.
+# Docs here <https://developer.gnome.org/glib/stable/glib-Error-Reporting.html>
+# might be useful for figuring it out in future.
 
 class Handle :
     "an SVG rendering context. Do not instantiate directly; use the new_xxx methods."
