@@ -270,7 +270,7 @@ class Handle :
     new_with_flags = new # whichever name you prefer
 
     @classmethod
-    def new_from_data(celf, data, error = None) :
+    def new_from_data(celf, data) :
         if isinstance(data, bytes) :
             baseadr = ct.cast(data, ct.c_void_p).value
             length = len(data)
@@ -297,7 +297,7 @@ class Handle :
     #end new_from_data
 
     @classmethod
-    def new_from_file(celf, file_name, error = None) :
+    def new_from_file(celf, file_name) :
         result = rsvg.rsvg_handle_new_from_file(file_name.encode(), None)
         if result == None :
             raise RuntimeError("rsvg_handle_new_from_file failed")
@@ -306,7 +306,7 @@ class Handle :
             celf(result)
     #end new_from_file
 
-    def write(self, data, error = None) :
+    def write(self, data) :
         if isinstance(data, bytes) :
             baseadr = ct.cast(data, ct.c_void_p).value
             length = len(data)
@@ -327,7 +327,7 @@ class Handle :
             success
     #end write
 
-    def close(self, error = None) :
+    def close(self) :
         success = rsvg.rsvg_handle_close(self._rsvgobj, None)
         return \
             success
