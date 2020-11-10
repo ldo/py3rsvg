@@ -125,7 +125,7 @@ if hasattr(rsvg, "librsvg_version") :
     librsvg_major_version = RSVG.guint.in_dll(rsvg, "librsvg_major_version")
     librsvg_minor_version = RSVG.guint.in_dll(rsvg, "librsvg_minor_version")
     librsvg_micro_version = RSVG.guint.in_dll(rsvg, "librsvg_micro_version")
-    ibrsvg_version = ct.c_char_p.in_dll(rsvg, "librsvg_version")
+    librsvg_version = ct.c_char_p.in_dll(rsvg, "librsvg_version")
 #end if
 
 #+
