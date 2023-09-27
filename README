@@ -2,7 +2,7 @@ py3rsvg is a pure-Python-3 binding for
 [`librsvg`](https://github.com/GNOME/librsvg) that tries to avoid any
 dependencies on GLib/GObject or any other such stuff. It does require
 my Qahirah ([GitLab](https://gitlab.com/ldo/qahirah),
-[GitHub](https://github.com/ldo/qahirah)) Python binding for the Cairo
+[BitBucket](https://bitbucket.org/ldo17/qahirah)) Python binding for the Cairo
 graphics library. This is to implement the `render_cairo` function for
 rendering an SVG image into a Cairo graphics context, and also to
 use Qahirah’s `Vector` type for representing 2D geometrical coordinates.
@@ -120,4 +120,4 @@ Save the result to a PNG file:
 which can then be viewed in your image editor or viewer of choice.
 
 Lawrence D'Oliveiro <ldo@geek-central.gen.nz>
-2017 September 27
+2023 September 27
